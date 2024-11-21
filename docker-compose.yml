@@ -1,0 +1,63 @@
+services:
+
+  #servicios
+  scrapper:
+    build: 
+      context: ./scrapper
+    ports: 
+      - "50051:50051"
+    depends_on:
+      - kafka
+    environment:
+      - PYTHONUNBUFFERED=1
+      - KAFKA_BROKER=kafka:9092
+    networks:
+      - distributed_system
+      - default
+    restart: on-failure
+
+  #kafka
+  kafka:
+    image: bitnami/kafka
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_BROKER_ID=0
+      - KAFKA_ENABLE_KRAFT=yes
+    networks:
+      - distributed_system
+    ports:
+      - "9092:9092"
+
+  #almacenamiento y analisis de datos
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - distributed_system
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.0
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - distributed_system
+
+networks:
+  distributed_system:
