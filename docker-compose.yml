@@ -16,9 +16,29 @@ services:
       - default
     restart: on-failure
 
+  spark:
+    build:
+      context: ./spark_service
+    depends_on:
+      - kafka
+      - cassandra
+      - elasticsearch
+    networks:
+      - distributed_system
+    environment:
+      - PYTHONUNBUFFERED=1
+      - KAFKA_BROKER=kafka:9092
+      - SPARK_MASTER_HOST=spark
+      - SPARK_MASTER_PORT=7077
+      - PYSPARK_PYTHON=/usr/bin/python3
+      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+    ports:
+      - 7077:7077
+      
+
   #kafka
   kafka:
-    image: bitnami/kafka
+    image: bitnami/kafka:3.9
     environment:
       - KAFKA_CFG_NODE_ID=0
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
@@ -36,7 +56,7 @@ services:
 
   #almacenamiento y analisis de datos
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.16.1
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
@@ -48,7 +68,7 @@ services:
       - distributed_system
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.0
+    image: docker.elastic.co/kibana/kibana:8.16.1
     container_name: kibana
     depends_on:
       - elasticsearch
@@ -56,6 +76,21 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     ports:
       - "5601:5601"
+    networks:
+      - distributed_system
+
+  cassandra:
+    image: bitnami/cassandra:4.0
+    container_name: cassandra
+    volumes:
+      - "C:/docker-volumes/cassandra:/var/lib/cassandra"
+      - ./cassandra_init:/docker-entrypoint-initdb.d/
+    environment:
+      - CASSANDRA_HOST=cassandra
+      - CASSANDRA_USER=cassandra
+      - CASSANDRA_PASSWORD=cassandra
+    ports:
+      - "9042:9042"
     networks:
       - distributed_system
 

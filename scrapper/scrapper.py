@@ -57,17 +57,17 @@ def scrape_corner(value, corner_name):
         for cls in classes:
             if cls.startswith("wm-alert-icon--"):
                 alert = {
-                    "type": [cls for cls in classes if cls.startswith("wm-alert-icon--")][0].replace("wm-alert-icon--", ""),
-                    "style": extract_coordinates(marker.get("style", "")),
-                    "corner": corner_name,
+                    "tipo": [cls for cls in classes if cls.startswith("wm-alert-icon--")][0].replace("wm-alert-icon--", ""),
+                    "coordenadas": extract_coordinates(marker.get("style", "")),
+                    "esquina": corner_name,
                     "timestamp": time.time()
                 }
                 alerts.append(alert)
             elif cls.startswith("wm-alert-cluster-icon--"):
                 alert = {
-                    "type": [cls for cls in classes if cls.startswith("wm-alert-cluster-icon--")][0].replace("wm-alert-cluster-icon--", ""),
-                    "style": extract_coordinates(marker.get("style", "")),
-                    "corner": corner_name,
+                    "tipo": [cls for cls in classes if cls.startswith("wm-alert-cluster-icon--")][0].replace("wm-alert-cluster-icon--", ""),
+                    "coordenadas": extract_coordinates(marker.get("style", "")),
+                    "esquina": corner_name,
                     "timestamp": time.time()
                 }
                 alerts.append(alert)
@@ -97,4 +97,4 @@ if __name__ == "__main__":
         alerts = scrape_waze_alerts_parallel()
 #        print(alerts)
         send_to_kafka(alerts)
-        time.sleep(300)
+        time.sleep(60)
