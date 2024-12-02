@@ -34,6 +34,7 @@ services:
       - ELASTICSEARCH_HOST=http://elasticsearch:9200
     ports:
       - 7077:7077
+    #restart: on-failure
       
 
   #kafka
@@ -83,7 +84,6 @@ services:
     image: bitnami/cassandra:4.0
     container_name: cassandra
     volumes:
-      - "C:/docker-volumes/cassandra:/var/lib/cassandra"
       - ./cassandra_init:/docker-entrypoint-initdb.d/
     environment:
       - CASSANDRA_HOST=cassandra

@@ -9,11 +9,11 @@ WITH replication = {
 USE traffic_data;
 
 -- Crear la tabla para alertas históricas
-CREATE TABLE IF NOT EXISTS historical_alerts (
-    alert_id TEXT PRIMARY KEY,
-    type TEXT,
-    latitude DOUBLE,
-    longitude DOUBLE,
-    corner TEXT,
-    timestamp TIMESTAMP
+CREATE TABLE IF NOT EXISTS alerts (
+    window_start timestamp,
+    window_end timestamp,
+    type text,
+    corner text,
+    count int,
+    PRIMARY KEY ((type, corner), window_start, window_end)
 );

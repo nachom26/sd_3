@@ -9,6 +9,7 @@ import re
 from concurrent.futures import ThreadPoolExecutor
 from kafka import KafkaProducer
 import json
+import datetime
 
 #extrae las coordenadas de la alerta en el mapa, esta esta guardada como translate3d(x, y) en el estilo, se necesitan x e y 
 def extract_coordinates(style):
@@ -57,17 +58,17 @@ def scrape_corner(value, corner_name):
         for cls in classes:
             if cls.startswith("wm-alert-icon--"):
                 alert = {
-                    "tipo": [cls for cls in classes if cls.startswith("wm-alert-icon--")][0].replace("wm-alert-icon--", ""),
-                    "coordenadas": extract_coordinates(marker.get("style", "")),
-                    "esquina": corner_name,
+                    "type": [cls for cls in classes if cls.startswith("wm-alert-icon--")][0].replace("wm-alert-icon--", ""),
+#                    "coordenadas": extract_coordinates(marker.get("style", "")),
+                    "corner": corner_name,
                     "timestamp": time.time()
                 }
                 alerts.append(alert)
             elif cls.startswith("wm-alert-cluster-icon--"):
                 alert = {
-                    "tipo": [cls for cls in classes if cls.startswith("wm-alert-cluster-icon--")][0].replace("wm-alert-cluster-icon--", ""),
-                    "coordenadas": extract_coordinates(marker.get("style", "")),
-                    "esquina": corner_name,
+                    "type": [cls for cls in classes if cls.startswith("wm-alert-cluster-icon--")][0].replace("wm-alert-cluster-icon--", ""),
+#                    "coordenadas": extract_coordinates(marker.get("style", "")),
+                    "corner": corner_name,
                     "timestamp": time.time()
                 }
                 alerts.append(alert)
