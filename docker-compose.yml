@@ -34,7 +34,7 @@ services:
       - ELASTICSEARCH_HOST=http://elasticsearch:9200
     ports:
       - 7077:7077
-    #restart: on-failure
+    restart: on-failure
       
 
   #kafka
